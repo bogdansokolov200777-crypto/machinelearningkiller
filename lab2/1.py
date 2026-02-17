@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 #Загрузка данных
 df = pd.read_csv('house_price_regression_dataset.csv')
 target = df.values[:, -1]
@@ -67,16 +68,21 @@ model4.fit(X4_train, y4_train)
 y4_pred = model4.predict(X4_test)
 
 #5 модель
-df5.drop(["Square_Footage", "Num_Bedrooms", "Garage_Size"], axis=1, inplace=True)
+df5.drop(["Garage_Size", "Neighborhood_Quality"], axis=1, inplace=True)
 print(df5.head())
-model5 = LinearRegression()
 y5 = np.copy(target)
 X5 = df5.values
-X5_train, X5_test, y5_train, y5_test = train_test_split(X5, y5,
-                                                    train_size=0.8,
-                                                    random_state=42)
-model5.fit(X5_train, y5_train)
-y5_pred = model5.predict(X5_test)
+X5_train, X5_test, y5_train, y5_test = train_test_split(
+    X5, y5,
+    train_size=0.8,
+    random_state=42
+)
+scaler5 = StandardScaler()
+X5_train_scaled = scaler5.fit_transform(X5_train)
+X5_test_scaled = scaler5.transform(X5_test)
+model5 = LinearRegression()
+model5.fit(X5_train_scaled, y5_train)
+y5_pred = model5.predict(X5_test_scaled)
 
 #Расчет метрик
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
@@ -97,4 +103,4 @@ r2_1 = print_metrics('Модель 1 (без Num_Bathrooms)', y1_test, y1_pred)
 r2_2 = print_metrics('Модель 2 (без Num_Bathrooms, Garage_Size)', y2_test, y2_pred)
 r2_3 = print_metrics('Модель 3 (Ridge Regression)', y3_test, y3_pred)
 r2_4 = print_metrics('Модель 4 (Lasso Regression)', y4_test, y4_pred)
-r2_5 = print_metrics('Модель 5 (без Square_Footage, Num_Bedrooms, Garage_Size)', y5_test, y5_pred)
+r2_5 = print_metrics('Модель 5 (без Garage_Size, Neighborhood_Quality + StandartScaler)', y5_test, y5_pred)
