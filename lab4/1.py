@@ -12,13 +12,6 @@ from sklearn.datasets import fetch_california_housing
 import ssl
 import certifi
 
-# Исправление SSL проблемы
-try:
-    _create_unverified_https_context = ssl._create_unverified_context
-except AttributeError:
-    pass
-else:
-    ssl._create_default_https_context = _create_unverified_https_context
 
 # Теперь загрузка должна работать
 data = fetch_california_housing()
